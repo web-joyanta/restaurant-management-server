@@ -27,6 +27,12 @@ async function run() {
         const database = client.db("restaurantDB");
         const foodsCollection = database.collection("foods");
 
+        app.get('/foods', async (req, res) => {
+            const cursor = foodsCollection.find();
+            const foods = await cursor.toArray();
+            res.send(foods);
+        })
+
         app.post('/foods', async (req, res) => {
             const newFood = req.body;
             const result = await foodsCollection.insertOne(newFood);
