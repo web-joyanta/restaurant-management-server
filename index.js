@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -8,9 +9,8 @@ app.use(cors());
 app.use(express.json());
 
 
-
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://restaurant-management:eJB6uWsPrPv792aW@cluster0.z1ypfcb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.z1ypfcb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -27,12 +27,22 @@ async function run() {
         const database = client.db("restaurantDB");
         const foodsCollection = database.collection("foods");
 
+        // get all foods data from bd
         app.get('/foods', async (req, res) => {
             const cursor = foodsCollection.find();
             const foods = await cursor.toArray();
             res.send(foods);
         })
 
+        // get a single food data by id form bd
+        app.get('/foods/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const food = await foodsCollection.findOne(query);
+            res.send(food);
+        });
+
+        // post food data to bd
         app.post('/foods', async (req, res) => {
             const newFood = req.body;
             const result = await foodsCollection.insertOne(newFood);
