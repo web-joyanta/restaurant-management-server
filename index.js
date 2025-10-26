@@ -26,6 +26,7 @@ async function run() {
     try {
         const database = client.db("restaurantDB");
         const foodsCollection = database.collection("foods");
+        const purchasesCollection = database.collection("purchases");
 
         // get all foods data from bd
         app.get('/foods', async (req, res) => {
@@ -48,6 +49,23 @@ async function run() {
             const result = await foodsCollection.insertOne(newFood);
             res.send(result);
         });
+
+        // post food purchases
+        app.post('/purchases', async (req, res) => {
+            const purchaseFood = req.body;
+            const result = await purchasesCollection.insertOne(purchaseFood);
+            res.send(result);
+        })
+
+        // patch food quantity or purchase
+        app.patch('/food/:id', async (req, res) => {
+            const id = req.params.id;
+            const { quantity, purchase } = req.body;
+            const query = { _id: new ObjectId(id) };
+            const update = { $set: { quantity, purchase } }
+            const result = await foodsCollection.updateOne(query, update);
+            res.send(result);
+        })
 
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
