@@ -10,6 +10,7 @@ app.use(express.json());
 
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const e = require('express');
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.z1ypfcb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -33,6 +34,15 @@ async function run() {
             const cursor = foodsCollection.find();
             const foods = await cursor.toArray();
             res.send(foods);
+        })
+
+        // get all orders purchase data form bd\
+        app.get('/orders/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { "buyer.email": email }
+            const cursor = purchasesCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
         })
 
         // get a single food data by id form bd
@@ -64,6 +74,13 @@ async function run() {
             const query = { _id: new ObjectId(id) };
             const update = { $set: { quantity, purchase } }
             const result = await foodsCollection.updateOne(query, update);
+            res.send(result);
+        })
+
+        app.delete('/food/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await purchasesCollection.deleteOne(query);
             res.send(result);
         })
 
