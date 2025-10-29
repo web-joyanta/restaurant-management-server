@@ -34,16 +34,25 @@ async function run() {
             const cursor = foodsCollection.find();
             const foods = await cursor.toArray();
             res.send(foods);
-        })
+        });
 
-        // get all orders purchase data form bd\
+        // get all orders purchase data form bd
         app.get('/orders/:email', async (req, res) => {
             const email = req.params.email;
             const query = { "buyer.email": email }
             const cursor = purchasesCollection.find(query);
             const result = await cursor.toArray();
             res.send(result);
-        })
+        });
+
+        // get all my foods data form bd
+        app.get('/myFoods/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { "addedBy.email": email };
+            const cursor = foodsCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        });
 
         // get a single food data by id form bd
         app.get('/foods/:id', async (req, res) => {
