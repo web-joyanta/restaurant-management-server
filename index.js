@@ -107,7 +107,15 @@ async function run() {
             res.send(result);
         })
 
-        // delete food by id from bd
+        // delete my food by id from bd
+        app.delete('/my-food/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id)};
+            const result = await foodsCollection.deleteOne(query);
+            res.send(result);
+        })
+
+        // delete my purchases food by id from bd
         app.delete('/food/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
