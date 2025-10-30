@@ -76,6 +76,27 @@ async function run() {
             res.send(result);
         })
 
+        // update food data by id form bd
+        app.put('/update-food/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedFood = req.body;
+            const filter = { _id: new ObjectId(id)};
+            const options = { upsert: true};
+            const updateDoc = {
+                $set: {
+                    name: updatedFood.name,
+                    image: updatedFood.image,
+                    category: updatedFood.category,
+                    quantity: updatedFood.quantity,
+                    price: updatedFood.price,
+                    origin: updatedFood.origin,
+                    description: updatedFood.description,
+                }
+            };
+            const result = await foodsCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        });
+
         // patch food quantity or purchase
         app.patch('/food/:id', async (req, res) => {
             const id = req.params.id;
@@ -86,6 +107,7 @@ async function run() {
             res.send(result);
         })
 
+        // delete food by id from bd
         app.delete('/food/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
