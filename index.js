@@ -62,6 +62,13 @@ async function run() {
             res.send(food);
         });
 
+        // get top selling foods from db
+        app.get('/top-foods', async (req, res) => {
+            const cursor = foodsCollection.find().sort({ purchase: -1 }).limit(6);
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
         // post food data to bd
         app.post('/foods', async (req, res) => {
             const newFood = req.body;
@@ -80,8 +87,8 @@ async function run() {
         app.put('/update-food/:id', async (req, res) => {
             const id = req.params.id;
             const updatedFood = req.body;
-            const filter = { _id: new ObjectId(id)};
-            const options = { upsert: true};
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
             const updateDoc = {
                 $set: {
                     name: updatedFood.name,
@@ -110,7 +117,7 @@ async function run() {
         // delete my food by id from bd
         app.delete('/my-food/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: new ObjectId(id)};
+            const query = { _id: new ObjectId(id) };
             const result = await foodsCollection.deleteOne(query);
             res.send(result);
         })
